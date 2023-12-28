@@ -200,9 +200,33 @@ async function UpdateUser(data) {
 }
 
 
+async function ResetPassword({phone, password}) {
+    try {
+        
+        let user = await User.findOneAndUpdate({ phone: phone }, { $set: { password: password } }, { new: true })
+        
+        await user.save()
+        user = user.toJSON()
+        delete user.password;
+        return {
+            status: true,
+            data: user,
+            message:'Passsword Set'
+        }
+
+    } catch (error) {
+        return {
+            status: false,
+            error: error,
+            message: 'No User Found',
+            
+        }; 
+    }
+}
+
 
 module.exports = {
-    CreateUser,
+    CreateUser, ResetPassword,
     FindUser, Login, VerifyToken, GetUser,
     GetLeadersBoard, GetAllUser, UpdateUser
 }

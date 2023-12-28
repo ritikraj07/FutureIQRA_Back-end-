@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser } = require('../Controller/User.Controller')
+const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser, ResetPassword } = require('../Controller/User.Controller')
 const {VerifyUser, VerifyAdmin} = require('../Middleware/Auth.Middleware')
 
 const UserRouter = Router()
@@ -67,6 +67,12 @@ UserRouter.patch('/update-photo', VerifyUser, async (req, res) => {
 UserRouter.patch('/update-user', VerifyUser, VerifyAdmin, async (req, res) => {
     let data = req.body
     let result = await UpdateUser(data)
+    res.send(result)
+})
+
+UserRouter.patch('/reset-password', async (req, res) => {
+    let { phone, password } = req.body
+    let result = await ResetPassword({ phone, password })
     res.send(result)
 })
 
