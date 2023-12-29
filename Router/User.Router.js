@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser, ResetPassword, DeleteAccount } = require('../Controller/User.Controller')
+const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser, ResetPassword, DeleteAccount, GetUserById } = require('../Controller/User.Controller')
 const {VerifyUser, VerifyAdmin} = require('../Middleware/Auth.Middleware')
 
 const UserRouter = Router()
@@ -14,11 +14,18 @@ UserRouter.post('/create-account', async (req, res) => {
 })
 
 
-
+UserRouter.post('/token', VerifyUser, async (req, res) => {
+    let id = req.user.data._id
+    console.log(id)
+    let response = await GetUserById(id)
+    res.send(response)
+})
 
 
 
 /**************************************** GET ******************************************/
+
+
 
 UserRouter.get('/phone/:phone', async (req, res) => {
     let phone = req.params.phone

@@ -3,7 +3,7 @@ const { VerifyToken } = require("../Controller/User.Controller")
 
 async function VerifyUser(req, res, next) {
     try { 
-        console.log( '=====>',req.headers)
+        // console.log( '=====>',req.headers)
         let headers = req.headers
         const authorization = headers.authorization
         if (authorization) {

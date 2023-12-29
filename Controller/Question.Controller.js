@@ -44,6 +44,7 @@ async function DeleteQuestion(id) {
                 data: "Question not found"
             };
         }
+        console.log('deleted', data)
         return {
             status: true,
             data: data
@@ -168,6 +169,8 @@ async function SearchQuestion({ q, sort }) {
     }
     
 }
+
+
 
 module.exports = {
     PostQuestion, PostAnswer,

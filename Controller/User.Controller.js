@@ -1,4 +1,6 @@
 const config = require("../Config");
+const Question = require("../Model/Question.Model");
+const Report = require("../Model/Report.Model");
 const User = require("../Model/User.Model");
 let bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -226,18 +228,67 @@ async function ResetPassword({phone, password}) {
 
 async function DeleteAccount(id) {
     try {
-        await User.findByIdAndDelete(id)
+        let user = await User.findByIdAndDelete(id);
+        if (!user) {
+            return {
+                status: false,
+                message: 'User Not Found'
+            };
+        }
+        console.log(user)
+
+        // Deleting all reports related to the user's phone number
+        let reports = await Report.deleteMany({ phone: user.phone });
+
+        // Deleting all questions related to the user's phone number
+        let questions = await Question.deleteMany({ phone: user.phone });
+
+        console.log(reports.deletedCount, '\n', questions.deletedCount);
+
         return {
             status: true,
-            message: 'User Delete Succefully'
+            message: 'User Deleted Successfully'
+        };
+    } catch (error) {
+        // Handle specific errors or differentiate error messages
+        return {
+            status: false,
+            error: error,
+            message: 'An error occurred while deleting user data'
+        };
+    }
+}
+
+
+async function GetUserById(id) {
+    // console.log('===> getuserbyit from user ',id)
+    try { 
+        let user = await User.findById(id)
+        if (user) {
+        
+
+            let referCode = user.referCode
+            let team = await GetTeam(referCode)
+            user = user.toJSON();
+
+            delete user.password;
+            return {
+                status: true,
+                data: { ...user, team },
+                token: GenerateToken({ ...user, team }),
+            }
+        } else {
+            return {
+                status: false,
+                data:'No User Found'
+            }
         }
     } catch (error) {
         return {
             status: false,
-            error: error,
-            message: 'No User Found',
-
-        }; 
+            data: "No User Found",
+            error
+        }
     }
 }
 
@@ -245,5 +296,5 @@ async function DeleteAccount(id) {
 module.exports = {
     CreateUser, ResetPassword, DeleteAccount,
     FindUser, Login, VerifyToken, GetUser,
-    GetLeadersBoard, GetAllUser, UpdateUser
+    GetLeadersBoard, GetAllUser, UpdateUser, GetUserById
 }

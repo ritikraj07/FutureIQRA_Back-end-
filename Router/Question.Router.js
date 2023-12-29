@@ -8,7 +8,7 @@ const QuestionRouter = Router()
 QuestionRouter.post('/', VerifyUser ,async (req, res) => {
     let {question, answer} = req.body
     let {phone} = req.user.data
-    console.log('===>', phone)
+    console.log('===>', req.user.data)
     let data = await PostQuestion({question, phone, answer})
     res.send(data)
     
