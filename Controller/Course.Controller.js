@@ -108,14 +108,16 @@ async function SearchCourse({ coursetype, id, name }) {
     try {
         let course;
         if (id) {
+            // console.log(id)
             course = await Course.findById(id)
         } else if (coursetype) {
+            // console.log(coursetype);
             const regex = new RegExp(coursetype, 'i');
             course = await Course.find({ coursetype: { $regex: regex } });
-            // console.log(course);
 
         } else if (name) {
-            const regex = new RegExp(coursetype, 'i');
+            // console.log(name)
+            const regex = new RegExp(name, 'i');
             course = await Course.find({ name: { $regex: regex } });
         }
         return {
