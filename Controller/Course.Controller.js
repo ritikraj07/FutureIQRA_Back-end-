@@ -169,11 +169,54 @@ async function DeleteCourse(id) {
 }
 
 
+async function DeleteVideoFromCourse(courseId, videoId) {
+    try {
+        // Find the course by ID
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return {
+                status: false,
+                message: 'Course not found',
+            };
+        }
+
+        // Find the index of the video in the 'videos' array
+        const videoIndex = course.videos.findIndex(video => video._id.toString() === videoId);
+
+        if (videoIndex === -1) {
+            return {
+                status: false,
+                message: 'Video not found in the course',
+            };
+        }
+
+        // Remove the video from the 'videos' array
+        course.videos.splice(videoIndex, 1);
+
+        // Save the updated course
+        await course.save();
+
+        return {
+            status: true,
+            message: 'Video deleted from the course',
+        };
+    } catch (error) {
+        return {
+            status: false,
+            error: error.message,
+            message: 'An error occurred while deleting the video from the course',
+        };
+    }
+}
+
+
 module.exports = {
     CreateCourse,
     AddVideo, GetAllCourse,
     GetCouserById,
     UpdateCourse,
     SearchCourse,
-    DeleteCourse
+    DeleteCourse,
+    DeleteVideoFromCourse
 }

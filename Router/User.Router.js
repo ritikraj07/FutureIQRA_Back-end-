@@ -90,7 +90,7 @@ UserRouter.patch('/reset-password', async (req, res) => {
 
 UserRouter.delete('/delete/id/:id',VerifyUser, VerifyAdmin, async (req, res) => {
     let id = req.params.id
-    console.log('=====>',id)
+    // console.log('=====>',id)
     let result = await DeleteAccount(id)
     res.send(result)
 })
