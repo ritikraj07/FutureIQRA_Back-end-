@@ -56,11 +56,6 @@ UserRouter.get('/all', async (req, res) => {
     res.send(users)
 })
 
-UserRouter.get('delete/id/:id', async (req, res) => {
-    let id = req.params.id
-    let result = await DeleteAccount(id)
-    res.send(res)
-})
 
 
 /**************************************** PATCH ******************************************/
@@ -80,6 +75,15 @@ UserRouter.patch('/update-user', VerifyUser, VerifyAdmin, async (req, res) => {
 UserRouter.patch('/reset-password', async (req, res) => {
     let { phone, password } = req.body
     let result = await ResetPassword({ phone, password })
+    res.send(result)
+})
+
+/**************************************** PATCH ******************************************/
+
+
+UserRouter.delete('delete/id/:id',VerifyUser, VerifyAdmin, async (req, res) => {
+    let id = req.params.id
+    let result = await DeleteAccount(id)
     res.send(result)
 })
 
