@@ -36,9 +36,9 @@ CourseRouter.get('/id/_id', async (req, res) => {
 
 CourseRouter.get('/search', async (req, res) => {
   
-    let { coursetype, id } = req.query
-    console.log({ coursetype, id })
-    let response = await SearchCourse({id, coursetype})
+    let { coursetype, id, name} = req.query
+    // console.log({ coursetype, id })
+    let response = await SearchCourse({id, coursetype, name})
     res.send(response)
     
 })

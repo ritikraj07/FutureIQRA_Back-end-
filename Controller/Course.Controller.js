@@ -104,7 +104,7 @@ async function UpdateCourse(data) {
     }
 }
 
-async function SearchCourse({ coursetype, id }) {
+async function SearchCourse({ coursetype, id, name }) {
     try {
         let course;
         if (id) {
@@ -114,6 +114,9 @@ async function SearchCourse({ coursetype, id }) {
             course = await Course.find({ coursetype: { $regex: regex } });
             // console.log(course);
 
+        } else if (name) {
+            const regex = new RegExp(coursetype, 'i');
+            course = await Course.find({ name: { $regex: regex } });
         }
         return {
             status: true,
