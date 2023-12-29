@@ -228,7 +228,7 @@ async function DeleteAccount(id) {
     try {
         await User.findByIdAndDelete(id)
         return {
-            stauts: true,
+            status: true,
             message: 'User Delete Succefully'
         }
     } catch (error) {
