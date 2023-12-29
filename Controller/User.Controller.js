@@ -224,9 +224,26 @@ async function ResetPassword({phone, password}) {
     }
 }
 
+async function DeleteAccount(id) {
+    try {
+        await User.findByIdAndDelete(id)
+        return {
+            stauts: true,
+            message: 'User Delete Succefully'
+        }
+    } catch (error) {
+        return {
+            status: false,
+            error: error,
+            message: 'No User Found',
+
+        }; 
+    }
+}
+
 
 module.exports = {
-    CreateUser, ResetPassword,
+    CreateUser, ResetPassword, DeleteAccount,
     FindUser, Login, VerifyToken, GetUser,
     GetLeadersBoard, GetAllUser, UpdateUser
 }

@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser, ResetPassword } = require('../Controller/User.Controller')
+const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser, ResetPassword, DeleteAccount } = require('../Controller/User.Controller')
 const {VerifyUser, VerifyAdmin} = require('../Middleware/Auth.Middleware')
 
 const UserRouter = Router()
@@ -55,6 +55,13 @@ UserRouter.get('/all', async (req, res) => {
     let users = await GetAllUser()
     res.send(users)
 })
+
+UserRouter.get('delete/id/:id', async (req, res) => {
+    let id = req.params.id
+    let result = await DeleteAccount(id)
+    res.send(res)
+})
+
 
 /**************************************** PATCH ******************************************/
 
