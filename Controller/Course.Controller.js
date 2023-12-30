@@ -211,6 +211,51 @@ async function DeleteVideoFromCourse(courseId, videoId) {
 }
 
 
+
+
+async function EditVideoInCourse(courseId, videoId, updatedVideoData) {
+    try {
+        // Find the course by ID
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return {
+                status: false,
+                message: 'Course not found',
+            };
+        }
+
+        // Find the index of the video in the 'videos' array
+        const videoIndex = course.videos.findIndex(video => video._id.toString() === videoId);
+
+        if (videoIndex === -1) {
+            return {
+                status: false,
+                message: 'Video not found in the course',
+            };
+        }
+
+        // Update the video with the new data
+        course.videos[videoIndex] = { ...course.videos[videoIndex], ...updatedVideoData };
+
+        // Save the updated course
+        await course.save();
+
+        return {
+            status: true,
+            message: 'Video updated in the course',
+        };
+    } catch (error) {
+        return {
+            status: false,
+            error: error.message,
+            message: 'An error occurred while updating the video in the course',
+        };
+    }
+}
+
+
+
 module.exports = {
     CreateCourse,
     AddVideo, GetAllCourse,
@@ -218,5 +263,6 @@ module.exports = {
     UpdateCourse,
     SearchCourse,
     DeleteCourse,
-    DeleteVideoFromCourse
+    DeleteVideoFromCourse,
+    EditVideoInCourse
 }

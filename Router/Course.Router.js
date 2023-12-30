@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { VerifyAdmin, VerifyUser } = require('../Middleware/Auth.Middleware');
-const { CreateCourse, AddVideo, GetAllCourse, GetCouserById, UpdateCourse, SearchCourse, DeleteCourse, DeleteVideoFromCourse } = require('../Controller/Course.Controller');
+const { CreateCourse, AddVideo, GetAllCourse, GetCouserById, UpdateCourse, SearchCourse, DeleteCourse, DeleteVideoFromCourse, EditVideoInCourse } = require('../Controller/Course.Controller');
 
 
 const CourseRouter = Router()
@@ -55,7 +55,15 @@ CourseRouter.patch('/delete-video', VerifyUser, VerifyAdmin, async (req, res) =>
     let { courseId, videoId } = req.body
     let response = await DeleteVideoFromCourse(courseId, videoId)
     res.send(response)
-} )
+})
+
+CourseRouter.patch('/edit-video', VerifyUser, VerifyAdmin, async (req, res) => {
+    let { courseId, videoId, updatedData } = req.body;
+    let response = await EditVideoInCourse(courseId, videoId, updatedData)
+    res.send(response)
+})
+
+
 /****************************************  Delete ******************************************/
 CourseRouter.delete('/id/:id', VerifyUser, VerifyAdmin, async (req, res) => {
     let id = req.params?.id
