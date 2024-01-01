@@ -37,8 +37,14 @@ CourseRouter.post('/buy-course', async (req, res) => {
                 amount: 1000,
                 currency: 'INR',
                 receipt: 'qwsaq1',
-                partial_payment: true,
-                first_payment_min_amount: 230,
+                partial_payment: false,
+                payment_capture: true,
+                notes: {
+                    merchant_details: 'Additional details for the merchant',
+                    customer_details: 'Additional details for the customer',
+                    // Any custom information you want to include
+                },
+                invoice_id: 'INV_12345', // Your custom invoice ID
             };
 
             const response = await fetch('https://api.razorpay.com/v1/orders', {
