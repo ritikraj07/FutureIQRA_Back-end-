@@ -42,9 +42,7 @@ CourseRouter.post('/buy-course', async (req, res) => {
                 notes: {
                     merchant_details: 'Additional details for the merchant',
                     customer_details: 'Additional details for the customer',
-                    // Any custom information you want to include
                 },
-                invoice_id: 'INV_12345', // Your custom invoice ID
             };
 
             const response = await fetch('https://api.razorpay.com/v1/orders', {
