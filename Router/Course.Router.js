@@ -7,7 +7,7 @@ const CourseRouter = Router()
 
 /**************************************** POST ******************************************/
 
-CourseRouter.post('/create',VerifyUser, VerifyAdmin, async (req, res) => {
+CourseRouter.post('/create', VerifyUser, VerifyAdmin, async (req, res) => {
     let { name, price, description, instructor, discount, intro } = req.body
     let result = await CreateCourse({ name, price, description, instructor, discount, intro })
     res.send(result)
@@ -19,6 +19,70 @@ CourseRouter.post('/add-video', VerifyUser, VerifyAdmin, async (req, res) => {
     let result = await AddVideo({ course_id, url, title, description, notes })
     res.send(result)
 })
+
+
+
+CourseRouter.post('/buy-course', async (req, res) => {
+    let { amount, receipt, } = req.body;
+
+
+
+
+    const YOUR_KEY_ID = 'rzp_test_6kEDsoP3MV9ItP';
+    const YOUR_KEY_SECRET = 'GuKnqoKZxSfrYTyrGtFH4SuT';
+
+    const createOrder = async () => {
+        try {
+            const payload = {
+                amount: 1000,
+                currency: 'INR',
+                receipt: 'qwsaq1',
+                partial_payment: true,
+                first_payment_min_amount: 230,
+            };
+
+            const response = await fetch('https://api.razorpay.com/v1/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Basic ${btoa(`${YOUR_KEY_ID}:${YOUR_KEY_SECRET}`)}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('Order created:', data);
+            return data;
+        } catch (error) {
+            console.error('Error creating order:', error);
+            throw error;
+        }
+    };
+
+
+
+
+
+    createOrder()
+        .then((result) => {
+           res.send(result)
+        })
+        .catch((error) => {
+            console.error('Error generating order:', error);
+            res.send("error", error)
+        });
+    
+
+});
+
+
+
+
+
 
 /****************************************  GET ******************************************/
 
@@ -35,12 +99,12 @@ CourseRouter.get('/id/_id', async (req, res) => {
 
 
 CourseRouter.get('/search', async (req, res) => {
-  
-    let { coursetype, id, name} = req.query
+
+    let { coursetype, id, name } = req.query
     console.log({ coursetype, id, name })
-    let response = await SearchCourse({id, coursetype, name})
+    let response = await SearchCourse({ id, coursetype, name })
     res.send(response)
-    
+
 })
 
 
