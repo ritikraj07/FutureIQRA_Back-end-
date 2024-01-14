@@ -108,15 +108,17 @@ async function SearchCourse({ coursetype, id, name }) {
     try {
         let course;
         if (id) {
-            // console.log(id)
-            course = await Course.findById(id)
-        } else if (coursetype) {
-            // console.log(coursetype);
+            course = await Course.findById(id);
+        }
+        
+        else if (coursetype && name) {
+            const nameRegex = new RegExp(name, 'i');
+            course = await Course.find({ $and: [{ coursetype: coursetype }, { name: nameRegex }] });
+        }
+        else if (coursetype) {
             const regex = new RegExp(coursetype, 'i');
             course = await Course.find({ coursetype: { $regex: regex } });
-
         } else if (name) {
-            // console.log(name)
             const regex = new RegExp(name, 'i');
             course = await Course.find({ name: { $regex: regex } });
         }
@@ -132,9 +134,8 @@ async function SearchCourse({ coursetype, id, name }) {
             error: error.message,
         };
     }
-
-
 }
+
 
 
 async function DeleteCourse(id) {
