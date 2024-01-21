@@ -292,9 +292,35 @@ async function GetUserById(id) {
     }
 }
 
+async function AddPaymentData(id, data) {
+    try {
+        let user = await User.findById(id);
+
+        if (!user) {
+            throw new Error('No user found');
+        }
+
+        // Check if the order ID already exists in paymentHistory
+        const orderExists = user.paymentHistory.some(payment => payment.orderId === data.order_id);
+
+        if (orderExists) {
+            throw new Error('Order ID already exists');
+        }
+
+        user.paymentHistory.push(data);
+        await user.save();
+
+        console.log('Payment data added successfully');
+        return { status: true, message: 'Payment data added successfully' };
+    } catch (error) {
+        console.error('Error adding payment data:', error.message);
+        return { status: false, error: error.message };
+    }
+}
+
 
 module.exports = {
     CreateUser, ResetPassword, DeleteAccount,
-    FindUser, Login, VerifyToken, GetUser,
+    FindUser, Login, VerifyToken, GetUser, AddPaymentData,
     GetLeadersBoard, GetAllUser, UpdateUser, GetUserById
 }

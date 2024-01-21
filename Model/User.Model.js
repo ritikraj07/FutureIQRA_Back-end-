@@ -2,8 +2,73 @@ const { Schema, model } = require('mongoose');
 
 
 const Payment = new Schema({
-    
-})
+    transactionId: {
+        type: Number,
+        required: true
+    },
+    orderId: {
+        type: String,
+        required: true
+    },
+    merchant: {
+        id: {
+            type: Number,
+            required: true
+        },
+        name: {
+            type: String,
+            required: true
+        },
+        vpa: {
+            type: String,
+            required: true
+        }
+    },
+    transactionDate: {
+        type: String,
+        required: true
+    },
+    amount: {
+        type: Number,
+        required: true
+    },
+
+    product: {
+
+        type: String,
+        required: true
+
+    },
+    customer_email: {
+        type: String,
+        required: true
+    },
+    bank: {
+        orderId: {
+            type: String,
+            required: true
+        },
+        utrNumber: {
+            type: Number,
+            required: true
+        }
+    },
+    paymentMode: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        required: true
+    },
+    expireTime: {
+        type: Date,
+        required: true
+    }
+}, {
+    timestamps: true
+});
+
 
 const UserSchema = new Schema({
     name: {
@@ -46,7 +111,7 @@ const UserSchema = new Schema({
     email: {
         type: String
     },
-    paymentHistroy: []
+    paymentHistroy: [Payment]
 }, {
     timestamps: true
 });

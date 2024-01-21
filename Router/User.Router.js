@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser, ResetPassword, DeleteAccount, GetUserById } = require('../Controller/User.Controller')
+const { CreateUser, FindUser, Login, GetUser, GetLeadersBoard, GetAllUser, UpdateUser, ResetPassword, DeleteAccount, GetUserById, AddPaymentData } = require('../Controller/User.Controller')
 const {VerifyUser, VerifyAdmin} = require('../Middleware/Auth.Middleware')
 
 const UserRouter = Router()
@@ -21,6 +21,12 @@ UserRouter.post('/token', VerifyUser, async (req, res) => {
     res.send(response)
 })
 
+
+UserRouter.post('/add-payment-history', VerifyUser, async (req, res) => {
+    let id = req.user.data._id
+    let response = await AddPaymentData(id, res.body)
+    res.send(response)
+})
 
 
 /**************************************** GET ******************************************/
@@ -85,7 +91,7 @@ UserRouter.patch('/reset-password', async (req, res) => {
     res.send(result)
 })
 
-/**************************************** PATCH ******************************************/
+/**************************************** DELETE ******************************************/
 
 
 UserRouter.delete('/delete/id/:id',VerifyUser, VerifyAdmin, async (req, res) => {
