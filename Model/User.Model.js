@@ -1,5 +1,10 @@
 const { Schema, model } = require('mongoose');
 
+
+const Payment = new Schema({
+    
+})
+
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -37,7 +42,11 @@ const UserSchema = new Schema({
         default: 'Basic',
         enum: ['Basic', 'VIP1', 'VIP2'], // Array defining allowed values for userType
         required: true // Indicates that userType is required
-    }
+    },
+    email: {
+        type: String
+    },
+    paymentHistroy: []
 }, {
     timestamps: true
 });
