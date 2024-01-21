@@ -6,20 +6,24 @@ const PaymentRouter = Router()
 
 PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
     try {
-        let {name, phone, _id} = req.user
+        let { _id } = req.user
+        let { amount, note, product_name, email, name, phone } = req.body
+        let token = config.PAYMENT_TOKEN
+        console.log(req.body, "token", token, _id)
         let orderId = GenerateOrderId()
         
         let courseData = {
-            token: config.PAYMENT_TOKEN,
+            token: token,
             order_id: orderId,
-            txn_amount: res.body.amount,
-            txn_note: res.body.note,
-            product_name: res.body.product_name,
+            txn_amount: amount,
+            txn_note: note,
+            product_name: product_name,
             customer_name: name,
             customer_mobile: phone,
-            customer_email: res.body.email,
+            customer_email: email,
             callback_url: `https://www.futureiqra.in/thank-you/${orderId}/${_id}`,
         };
+        console.log('\n\n\n', courseData)
         const response = await axios.post('https://allapi.in/order/create', courseData);
         res.json(response.data);
     } catch (error) {
