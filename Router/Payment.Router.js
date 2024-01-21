@@ -12,12 +12,12 @@ PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
         let courseData = {
             token: config.PAYMENT_TOKEN,
             order_id: orderId,
-            txn_amount: res.amount,
-            txn_note: res.note,
-            product_name: res.product_name,
+            txn_amount: res.body.amount,
+            txn_note: res.body.note,
+            product_name: res.body.product_name,
             customer_name: name,
             customer_mobile: phone,
-            customer_email: res.email,
+            customer_email: res.body.email,
             callback_url: `https://www.futureiqra.in/thank-you/${orderId}/${_id}`,
         };
         const response = await axios.post('https://allapi.in/order/create', courseData);
