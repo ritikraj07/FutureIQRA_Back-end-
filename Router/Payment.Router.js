@@ -8,6 +8,7 @@ PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
     try {
         let {name, phone, _id} = req.user
         let orderId = GenerateOrderId()
+        
         let courseData = {
             token: config.PAYMENT_TOKEN,
             order_id: orderId,
@@ -28,8 +29,9 @@ PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
 });
 
 
-PaymentRouter.post('/order/status/:orderId', VerifyUser, async (req, res) => {
+PaymentRouter.post('/order/status/:orderId', async (req, res) => {
     try {
+        
         let orderId = req.params.orderId
         let data = {
             token: config.PAYMENT_TOKEN,
