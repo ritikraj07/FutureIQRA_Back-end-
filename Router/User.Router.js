@@ -22,9 +22,8 @@ UserRouter.post('/token', VerifyUser, async (req, res) => {
 })
 
 
-UserRouter.post('/add-payment-history', VerifyUser, async (req, res) => {
-    let id = req.user.data._id
-    let response = await AddPaymentData(id, res.body)
+UserRouter.post('/add-payment-history', async (req, res) => {
+    let response = await AddPaymentData(req.body)
     res.send(response)
 })
 
