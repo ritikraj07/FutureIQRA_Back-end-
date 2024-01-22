@@ -60,7 +60,7 @@ let count = 0
 
 PaymentRouter.post('/callback', async (req, res) => {
     const { status, message, order_id } = req.body
-    console.log(status)
+    console.log(status, req.body, '============================<=====================>', req)
     count++;
     console.log(count)
     if (status) {
