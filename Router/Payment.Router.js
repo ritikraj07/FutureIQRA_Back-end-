@@ -21,7 +21,7 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
             customer_name: name,
             customer_mobile: phone,
             customer_email: email,
-            callback_url: `https://www.futureiqra.in/thank-you/${orderId}`,
+            callback_url: ` https://futureiqra.onrender.com/payment/futureiqra/${orderId}`,
         };
         // console.log('\n\n\n', courseData)
         const response = await axios.post('https://allapi.in/order/create', courseData);
@@ -31,6 +31,11 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+PaymentRouter.post('/futureiqra/:orderId', (req, res) => {
+    let orderId = req.params.orderId
+    res.redirect(`https://www.futureiqra.in/thank-you/${orderId}`)
+})
 
 
 
