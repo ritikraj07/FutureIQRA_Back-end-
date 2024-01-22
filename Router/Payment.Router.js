@@ -4,14 +4,14 @@ const config = require('../Config');
 const { VerifyUser } = require('../Middleware/Auth.Middleware');
 const PaymentRouter = Router()
 
-PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
+PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
     try {
         let { _id } = req.user
         let { amount, note, product_name, email, name, phone } = req.body
         let token = config.PAYMENT_TOKEN
-        console.log(req.body, "token", token, _id)
+        // console.log(req.body, "token", token, _id)
         let orderId = GenerateOrderId()
-        
+
         let courseData = {
             token: token,
             order_id: orderId,
@@ -21,9 +21,9 @@ PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
             customer_name: name,
             customer_mobile: phone,
             customer_email: email,
-            callback_url: `https://www.futureiqra.in/thank-you/${orderId}`,
+            callback_url: `https://futureiqra.onrender.com/payment/callback`,
         };
-        console.log('\n\n\n', courseData)
+        // console.log('\n\n\n', courseData)
         const response = await axios.post('https://allapi.in/order/create', courseData);
         res.json(response.data);
     } catch (error) {
@@ -33,9 +33,15 @@ PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
 });
 
 
+// https://www.futureiqra.in/thank-you/${orderId}
+// https://www.futureiqra.in/thank-you/${orderId}
+// /callback/futureiqra /
+//     https://futureiqra.onrender.com/payment/callback/futureiqra/:orderId
+
+
 PaymentRouter.post('/order/status/:orderId', async (req, res) => {
     try {
-        
+
         let orderId = req.params.orderId
         let data = {
             token: config.PAYMENT_TOKEN,
@@ -43,14 +49,35 @@ PaymentRouter.post('/order/status/:orderId', async (req, res) => {
         };
         const response = await axios.post("https://allapi.in/order/status", data)
         res.json(response.data);
-     } catch (error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
 
+let paymentStatus = false
+let count = 0
+
+PaymentRouter.post('/callback', async (req, res) => {
+    const { status, message, order_id } = req.body
+    console.log(status)
+    count++;
+    console.log(count)
+    if (status) {
+        paymentStatus = true
+
+    } else {
+        paymentStatus = false
+    }
+    res.json({status: paymentStatus})
+})
 
 
+
+
+PaymentRouter.get('/status', async (req, res) => {
+    res.json({status: paymentStatus})
+})
 
 
 module.exports = PaymentRouter;
