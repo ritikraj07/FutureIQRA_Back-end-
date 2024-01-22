@@ -301,7 +301,7 @@ async function AddPaymentData(id, data) {
         }
 
         // Check if the order ID already exists in paymentHistory
-        const orderExists = user.paymentHistory.some(payment => payment.orderId === data.order_id);
+        const orderExists = user.paymentHistory.filter(payment => payment.orderId === data.order_id);
 
         if (orderExists) {
             throw new Error('Order ID already exists');
