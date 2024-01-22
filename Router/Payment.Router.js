@@ -21,7 +21,7 @@ PaymentRouter.post('/api/proxy',VerifyUser ,async (req, res) => {
             customer_name: name,
             customer_mobile: phone,
             customer_email: email,
-            callback_url: `https://www.futureiqra.in/thank-you/${orderId}/${_id}`,
+            callback_url: `https://www.futureiqra.in/thank-you/${orderId}`,
         };
         console.log('\n\n\n', courseData)
         const response = await axios.post('https://allapi.in/order/create', courseData);
