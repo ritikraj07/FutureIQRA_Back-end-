@@ -20,7 +20,7 @@ app.use(cors());
 // app.use((req, res, next) => {
 //     // how to use this url also https://futureiqra.onrender.com/ this my backend url
 //   res.header('Access-Control-Allow-Origin', 'https://www.futureiqra.in');  // frontend url
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); //
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); 
   
 //   next();
 // });
@@ -28,9 +28,10 @@ app.use(cors());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'https://www.futureiqra.in');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
+
 
 app.use(morgan('tiny'))
 
