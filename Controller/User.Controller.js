@@ -40,7 +40,7 @@ async function Login(phone, password) {
             let referCode = user.referCode
             let team = await GetTeam(referCode)
             user = user.toJSON();
-            
+
             delete user.password;
             return {
                 status: true,
@@ -94,7 +94,7 @@ async function CreateUser({ name, phone, referby, password }) {
     return {
         status: true,
         data: { ...user, team },
-        token: GenerateToken({ ...user, team})
+        token: GenerateToken({ ...user, team })
     }
 }
 
@@ -171,7 +171,7 @@ async function GetAllUser() {
 
 async function UpdateUser(data) {
     // console.log("data===>", data)
-    try { 
+    try {
         let updatedUser = await User.findOneAndUpdate({ _id: data._id }, { $set: data }, { new: true })
         await updatedUser.save()
         // console.log('updated user ==>', updatedUser)
@@ -195,25 +195,25 @@ async function UpdateUser(data) {
             status: false,
             error: error,
             message: 'Internal Server Issue'
-        }; 
+        };
     }
-    
+
 
 }
 
 
-async function ResetPassword({phone, password}) {
+async function ResetPassword({ phone, password }) {
     try {
-        
+
         let user = await User.findOneAndUpdate({ phone: phone }, { $set: { password: password } }, { new: true })
-        
+
         await user.save()
         user = user.toJSON()
         delete user.password;
         return {
             status: true,
             data: user,
-            message:'Passsword Set'
+            message: 'Passsword Set'
         }
 
     } catch (error) {
@@ -221,8 +221,8 @@ async function ResetPassword({phone, password}) {
             status: false,
             error: error,
             message: 'No User Found',
-            
-        }; 
+
+        };
     }
 }
 
@@ -262,10 +262,10 @@ async function DeleteAccount(id) {
 
 async function GetUserById(id) {
     // console.log('===> getuserbyit from user ',id)
-    try { 
+    try {
         let user = await User.findById(id)
         if (user) {
-        
+
 
             let referCode = user.referCode
             let team = await GetTeam(referCode)
@@ -280,7 +280,7 @@ async function GetUserById(id) {
         } else {
             return {
                 status: false,
-                data:'No User Found'
+                data: 'No User Found'
             }
         }
     } catch (error) {
@@ -308,6 +308,13 @@ async function AddPaymentData(data) {
             throw new Error('Order ID already exists');
         }
 
+        let referedByUser = await User.findOne({ referCode: user.referby })
+        if (referedByUser) {
+            let refer_prize = getRandomNumber(1, data.amount)
+            referedByUser.wallet = referedByUser.wallet + refer_prize
+            await referedByUser.save();
+        }
+
         delete user.phone
         // Modify user data as needed
         user.userType = data.product;
@@ -324,6 +331,14 @@ async function AddPaymentData(data) {
         console.error('Error adding payment data:', error.message);
         return { status: false, error: error.message };
     }
+}
+
+function getRandomNumber(min, max) {
+    if (min > max) {
+        [min, max] = [max, min];
+    }
+    const randomNumber = Math.random() * (max - min) + min;
+    return Math.floor(randomNumber);
 }
 
 
