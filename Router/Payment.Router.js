@@ -2,16 +2,15 @@ const { Router } = require('express')
 const axios = require('axios');
 const config = require('../Config');
 const { VerifyUser } = require('../Middleware/Auth.Middleware');
+const { CreatePaymentRequest, GetPaymentStatus, ChangePaymentStatus, GetAll_User_Payment_Data } = require('../Controller/Payment.Controller');
 const PaymentRouter = Router()
 
 PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
     try {
-        let { _id } = req.user
         let { amount, note, product_name, email, name, phone } = req.body
         let token = config.PAYMENT_TOKEN
-        // console.log(req.body, "token", token, _id)
+        
         let orderId = GenerateOrderId()
-
         let courseData = {
             token: token,
             order_id: orderId,
@@ -21,37 +20,94 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
             customer_name: name,
             customer_mobile: phone,
             customer_email: email,
-            callback_url: `https://futureiqra.onrender.com/payment/futureiqra/${orderId}`,
+            callback_url: `https://futureiqra.onrender.com/payment/status/${orderId}`,
         };
-        // console.log('\n\n\n', courseData)
+        
+
         const response = await axios.post('https://allapi.in/order/create', courseData);
         res.json(response.data);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error route' });
     }
 });
 
-PaymentRouter.post('/futureiqra/:orderId', (req, res) => {
-    let orderId = req.params.orderId
-    res.redirect(`https://www.futureiqra.in/thank-you/${orderId}`)
-})
-
-
-
-
-
-
-PaymentRouter.post('/order/status/:orderId', async (req, res) => {
+PaymentRouter.post('/status/:orderId', async (req, res) => {
     try {
-
-        let orderId = req.params.orderId
+        let { orderId } = req.params
+    
+        let { referby } = req.user.data
         let data = {
             token: config.PAYMENT_TOKEN,
             order_id: orderId,
         };
         const response = await axios.post("https://allapi.in/order/status", data)
+
+        if (response.data.status) {
+            let paymentData = {
+                phone: response.data.results.customer_mobile,
+                orderId: orderId,
+                transactionData: response.data.results.txn_date,
+                amount: response.data.results.txn_amount,
+                product: response.data.results.product_name,
+                paymentMode: response.data.results.payment_mode,
+                status: response.data.results.status,
+                expireTime: ExpireTime(response.data.results.txn_date),
+                referby: referby
+            }
+            // console.log(paymentData)
+            await CreatePaymentRequest(paymentData)
+        }
+
         res.json(response.data);
+
+
+        res.redirect(`https://www.futureiqra.in/thank-you/${orderId}`)
+        
+    } catch (error) {
+        res.send({
+            status: false,
+            message: 'Internal Route Error',
+            error: error
+        })
+}
+})
+
+
+
+
+PaymentRouter.get('/status/:orderId', async (req, res) => {
+    try {
+        
+        let orderId = req.params.orderId
+        let response = await GetPaymentStatus(orderId)
+        if (response.data.status == 'Pending') {
+            let data = {
+                token: config.PAYMENT_TOKEN,
+                order_id: orderId,
+            };
+            const response = await axios.post("https://allapi.in/order/status", data)
+            if (response.data.results.status !== 'Pending') {
+                let newResponse = await ChangePaymentStatus(orderId, response.data.results.status)
+                res.send(newResponse)
+            }
+        } else {
+            res.send(response)
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
+
+
+
+PaymentRouter.get('/all/:phone',VerifyUser, async (req, res) => {
+    try { 
+        let phone = req.params.phone
+        let response = await GetAll_User_Payment_Data(phone)
+        res.send(response)
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -86,4 +142,22 @@ function GenerateOrderId() {
 
     return generatedText;
 }
+
+function ExpireTime(inputDate) {
+    const date = new Date(inputDate);
+
+    // Get the next month
+    date.setMonth(date.getMonth() + 1);
+
+    // Extract date, month, and year
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+
+    // Combine the values into a formatted string
+    const formattedDate = `${day} ${month} ${year}`;
+
+    return formattedDate;
+}
+
 

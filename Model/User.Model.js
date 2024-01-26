@@ -111,7 +111,7 @@ const UserSchema = new Schema({
     email: {
         type: String
     },
-    paymentHistory: [Payment]
+
 }, {
     timestamps: true
 });

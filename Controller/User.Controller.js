@@ -1,4 +1,5 @@
 const config = require("../Config");
+const Payment = require("../Model/Payment.Model");
 const Question = require("../Model/Question.Model");
 const Report = require("../Model/Report.Model");
 const User = require("../Model/User.Model");
@@ -39,13 +40,14 @@ async function Login(phone, password) {
         if (user.password == password) {
             let referCode = user.referCode
             let team = await GetTeam(referCode)
+            let paymentHistory = await Payment.find({userId: user._id})
             user = user.toJSON();
 
             delete user.password;
             return {
                 status: true,
-                data: { ...user, team },
-                token: GenerateToken({ ...user, team }),
+                data: { ...user, team, paymentHistory },
+                token: GenerateToken({ ...user, team, paymentHistory }),
             }
         } else {
             return {
@@ -177,16 +179,16 @@ async function UpdateUser(data) {
         // console.log('updated user ==>', updatedUser)
         let team = await GetTeam(updatedUser.referby)
         let user = await User.findById(data._id)
-        // let team = await GetTeam(referby)
+        let paymentHistory = await Payment.find({userId: user._id})
         user = user.toJSON();
 
         delete user.password;
-        console.log('team', team)
+        
         if (updatedUser) {
             return {
                 status: true,
                 data: updatedUser,
-                token: GenerateToken({ ...user, team }),
+                token: GenerateToken({ ...user, team, paymentHistory }),
             }
         }
     }
@@ -269,13 +271,14 @@ async function GetUserById(id) {
 
             let referCode = user.referCode
             let team = await GetTeam(referCode)
+            let paymentHistory = await Payment.find({ userId: user._id });
             user = user.toJSON();
 
             delete user.password;
             return {
                 status: true,
-                data: { ...user, team },
-                token: GenerateToken({ ...user, team }),
+                data: { ...user, team, paymentHistory },
+                token: GenerateToken({ ...user, team, paymentHistory }),
             }
         } else {
             return {
@@ -292,59 +295,12 @@ async function GetUserById(id) {
     }
 }
 
-async function AddPaymentData(data) {
-    console.log(data, '=====')
-    try {
-        let user = await User.findOne({ phone: data.phone });
 
-        if (!user) {
-            throw new Error('No user found');
-        }
-
-        // Check if the order ID already exists in paymentHistory
-        const orderExists = user.paymentHistory.some(payment => payment.orderId === data.orderId);
-
-        if (orderExists) {
-            throw new Error('Order ID already exists');
-        }
-
-        let referedByUser = await User.findOne({ referCode: user.referby })
-        if (referedByUser) {
-            let refer_prize = getRandomNumber(1, data.amount)
-            referedByUser.wallet = referedByUser.wallet + refer_prize
-            await referedByUser.save();
-        }
-
-        delete user.phone
-        // Modify user data as needed
-        user.userType = data.product;
-
-        // Add payment data to paymentHistory
-        user.paymentHistory.push(data);
-
-        // Save the updated user
-        await user.save();
-
-        console.log('Payment data added successfully');
-        return { status: true, message: 'Payment data added successfully' };
-    } catch (error) {
-        console.error('Error adding payment data:', error.message);
-        return { status: false, error: error.message };
-    }
-}
-
-function getRandomNumber(min, max) {
-    if (min > max) {
-        [min, max] = [max, min];
-    }
-    const randomNumber = Math.random() * (max - min) + min;
-    return Math.floor(randomNumber);
-}
 
 
 
 module.exports = {
     CreateUser, ResetPassword, DeleteAccount,
-    FindUser, Login, VerifyToken, GetUser, AddPaymentData,
+    FindUser, Login, VerifyToken, GetUser,
     GetLeadersBoard, GetAllUser, UpdateUser, GetUserById
 }
