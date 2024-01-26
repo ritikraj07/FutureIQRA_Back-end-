@@ -6,13 +6,19 @@ async function CreatePaymentRequest(paymentData) {
     try { 
 
         let payment = await Payment.create(paymentData)
-        if (paymentData.status=='Success') {
+        if (paymentData.status == 'Success') {
+            let user = await User.findOne({ phone: paymentData.phone })
+            if (user) {
+                user.userType = paymentData.product
+                await user.save()
+            }
             let referedByUser = await User.findOne({ referCode: paymentData.referby })
             if (referedByUser) {
                 let refer_prize = getRandomNumber(1, data.amount)
                 referedByUser.wallet = referedByUser.wallet + refer_prize
                 await referedByUser.save();
             }
+
 
         }
         
