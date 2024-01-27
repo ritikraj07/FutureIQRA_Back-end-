@@ -16,8 +16,9 @@ UserRouter.post('/create-account', async (req, res) => {
 
 
 UserRouter.post('/token', VerifyUser, async (req, res) => {
+    
     let id = req.user.data._id
-    console.log(id)
+    // console.log(req.user.data)
     let response = await GetUserById(id)
     res.send(response)
 })

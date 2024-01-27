@@ -7,14 +7,24 @@ let bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 
-function GenerateToken(user) {
-    let payload = {
-        _id: user._id,
-        data: user
-    }
+async function GenerateToken(user) {
+    try {
+        console.log(user);
+        let payload = {
+            _id: user._id,
+            data: user,
+        };
 
-    return jwt.sign(payload, config.JWT_SECRET)
+        
+
+        return jwt.sign(payload, config.JWT_SECRET);
+    } catch (error) {
+        // Handle errors, e.g., log the error
+        console.error("Error in GenerateToken:", error);
+        throw error; // Rethrow the error to be caught by the caller
+    }
 }
+
 
 function VerifyToken(token) {
     const payload = jwt.verify(token, config.JWT_SECRET)
@@ -39,15 +49,13 @@ async function Login(phone, password) {
     if (user) {
         if (user.password == password) {
             let referCode = user.referCode
-            let team = await GetTeam(referCode)
-            let paymentHistory = await Payment.find({userId: user._id})
             user = user.toJSON();
 
             delete user.password;
             return {
                 status: true,
-                data: { ...user, team, paymentHistory },
-                token: GenerateToken({ ...user, team, paymentHistory }),
+                data: user,
+                token: await GenerateToken(user)
             }
         } else {
             return {
@@ -82,7 +90,7 @@ async function CreateUser({ name, phone, referby, password }) {
     while (!isUnique) {
         referCode = generateRandomCode()
         let isUserExistWithThisCode = await User.find({ referCode })
-        console.log(isUserExistWithThisCode)
+        
         if (isUserExistWithThisCode) {
             isUnique = true;
             break;
@@ -96,7 +104,7 @@ async function CreateUser({ name, phone, referby, password }) {
     return {
         status: true,
         data: { ...user, team },
-        token: GenerateToken({ ...user, team })
+        token: await GenerateToken(user)
     }
 }
 
@@ -188,7 +196,7 @@ async function UpdateUser(data) {
             return {
                 status: true,
                 data: updatedUser,
-                token: GenerateToken({ ...user, team, paymentHistory }),
+                token: GenerateToken(user),
             }
         }
     }
@@ -271,14 +279,14 @@ async function GetUserById(id) {
 
             let referCode = user.referCode
             let team = await GetTeam(referCode)
-            let paymentHistory = await Payment.find({ userId: user._id });
+            let paymentHistory = await Payment.find({phone: user.phone});
             user = user.toJSON();
 
             delete user.password;
             return {
                 status: true,
                 data: { ...user, team, paymentHistory },
-                token: GenerateToken({ ...user, team, paymentHistory }),
+                token: await GenerateToken(user),
             }
         } else {
             return {

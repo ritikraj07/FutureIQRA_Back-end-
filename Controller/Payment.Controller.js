@@ -121,6 +121,59 @@ async function GetAll_User_Payment_Data(phone) {
 }
 
 
+async function updateExpiredPayments() {
+    try {
+        let currentTime = new Date();
+
+        currentTime = ExpireTime(currentTime)
+
+
+        // Use the aggregation pipeline to find payments with status 'Success' and expireTime less than or equal to the current time
+        const expiredPayments = await Payment.aggregate([
+            {
+                $match: {
+                    status: 'Success',
+                    expireTime: { $lte: currentTime },  // Compare directly with currentTime
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    phone: 1,
+                },
+            },
+        ]);
+
+        // Extract phone numbers from the result
+        const phonesToUpdate = expiredPayments.map((payment) => payment.phone);
+
+        // Update the status of expired payments to 'Expire'
+        await Payment.updateMany(
+            {
+                phone: { $in: phonesToUpdate },
+                status: { $ne: 'Expire' },
+            },
+            { $set: { status: 'Expire' } }
+        );
+
+        console.log('Expired payments updated successfully.');
+
+        // Find users by phone and update userType to 'Basic'
+        await User.updateMany(
+            { phone: { $in: phonesToUpdate } },
+            { $set: { userType: 'Basic' } }
+        );
+
+        console.log('User types updated successfully.');
+    } catch (error) {
+        console.error('Error updating expired payments and user types:', error);
+    }
+}
+
+
+setInterval(updateExpiredPayments,1000*60*6)
+
+
 
 
 
@@ -131,6 +184,18 @@ function getRandomNumber(min, max) {
     const randomNumber = Math.random() * (max - min) + min;
     return Math.floor(randomNumber);
 }
+
+function ExpireTime(inputDate) {
+    const date = new Date(inputDate);
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    const formattedDate = `${day} ${month} ${year}`;
+    return formattedDate;
+}
+
+
+
 
 
 module.exports = {

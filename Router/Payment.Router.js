@@ -45,7 +45,7 @@ PaymentRouter.post('/status/:orderId', async (req, res) => {
         const response = await axios.post("https://allapi.in/order/status", data);
         // res.json(response.data);
     let expireTime = ExpireTime(response.data.results.txn_date)
-    console.log(expireTime)
+    
         if (response.data.status) {
             let paymentData = {
                 phone: response.data.results.customer_mobile,
@@ -80,7 +80,7 @@ PaymentRouter.get('/order-status/:orderId', async (req, res) => {
                 order_id: orderId,
             };
             const response = await axios.post("https://allapi.in/order/status", data)
-            console.log('==81==>', response)
+            
             if (response.data.results.status !== 'Pending') {
                 let newResponse = await ChangePaymentStatus(orderId, response.data.results.status)
                 res.send(newResponse)
