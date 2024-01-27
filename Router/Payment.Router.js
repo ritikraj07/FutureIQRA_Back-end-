@@ -71,13 +71,15 @@ PaymentRouter.get('/order-status/:orderId', async (req, res) => {
     try {
         
         let orderId = req.params.orderId
-        let response = await GetPaymentStatus(orderId)
-        if (response.data.status == 'Pending') {
+        let response = await GetPaymentStatus({ orderId })
+
+        if (response.status == true && response?.data?.status == 'Pending') {
             let data = {
                 token: config.PAYMENT_TOKEN,
                 order_id: orderId,
             };
             const response = await axios.post("https://allapi.in/order/status", data)
+            console.log('==81==>', response)
             if (response.data.results.status !== 'Pending') {
                 let newResponse = await ChangePaymentStatus(orderId, response.data.results.status)
                 res.send(newResponse)

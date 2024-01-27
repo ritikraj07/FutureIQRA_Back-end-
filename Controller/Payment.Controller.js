@@ -4,7 +4,15 @@ const User = require("../Model/User.Model");
 
 async function CreatePaymentRequest(paymentData) {
     try { 
-        console.log(paymentData, '<======')
+        const existingPayment = await Payment.findOne({ orderId: paymentData.orderId });
+
+        if (existingPayment) {
+            // Payment with the orderId already exists
+            return {
+                status: false,
+                message: 'Payment with the given orderId already exists.',
+            };
+        }
         let payment = await Payment.create(paymentData)
         if (paymentData.status == 'Success') {
             let user = await User.findOne({ phone: paymentData.phone })
