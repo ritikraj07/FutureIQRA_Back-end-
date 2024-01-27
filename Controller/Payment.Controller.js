@@ -12,9 +12,15 @@ async function CreatePaymentRequest(paymentData) {
                 user.userType = paymentData.product
                 await user.save()
             }
-            let referedByUser = await User.findOne({ referCode: paymentData.referby })
+            let referedByUser = await User.findOne({ referCode: user.referby })
             if (referedByUser) {
-                let refer_prize = getRandomNumber(1, data.amount)
+                let refer_prize = 0
+                if (paymentData.product == 'VIP1') {
+                    refer_prize = 370
+                } else {
+                    refer_prize = 540
+                }
+                
                 referedByUser.wallet = referedByUser.wallet + refer_prize
                 await referedByUser.save();
             }
@@ -39,6 +45,7 @@ async function CreatePaymentRequest(paymentData) {
 async function GetPaymentStatus({orderId}) {
     try {
         let payment = await Payment.findOne({ orderId: orderId })
+        
         if (!payment) {
             return {
                 status: false,

@@ -33,45 +33,11 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
 });
 
 PaymentRouter.post('/status/:orderId', async (req, res) => {
-    try {
-        let { orderId } = req.params
     
-        let { referby } = req.user.data
-        let data = {
-            token: config.PAYMENT_TOKEN,
-            order_id: orderId,
-        };
-        const response = await axios.post("https://allapi.in/order/status", data)
-
-        if (response.data.status) {
-            let paymentData = {
-                phone: response.data.results.customer_mobile,
-                orderId: orderId,
-                transactionData: response.data.results.txn_date,
-                amount: response.data.results.txn_amount,
-                product: response.data.results.product_name,
-                paymentMode: response.data.results.payment_mode,
-                status: response.data.results.status,
-                expireTime: ExpireTime(response.data.results.txn_date),
-                referby: referby
-            }
-            // console.log(paymentData)
-            await CreatePaymentRequest(paymentData)
-        }
-
-        res.json(response.data);
-
-
-        res.redirect(`https://www.futureiqra.in/thank-you/${orderId}`)
-        
-    } catch (error) {
-        res.send({
-            status: false,
-            message: 'Internal Route Error',
-            error: error
-        })
-}
-})
+        let { orderId } = req.params;
+        res.redirect(`https://www.futureiqra.in/thank-you/${orderId}`);
+ 
+});
 
 
 
@@ -91,7 +57,34 @@ PaymentRouter.get('/order-status/:orderId', async (req, res) => {
                 let newResponse = await ChangePaymentStatus(orderId, response.data.results.status)
                 res.send(newResponse)
             }
-        } else {
+        } else if (response.status == false && response.message == 'Invalid OrderID!') {
+
+            let data = {
+                token: config.PAYMENT_TOKEN,
+                order_id: orderId,
+            };
+
+            const response = await axios.post("https://allapi.in/order/status", data);
+            
+
+            if (response.data.status) {
+                let paymentData = {
+                    phone: response.data.results.customer_mobile,
+                    orderId: orderId,
+                    transactionData: response.data.results.txn_date,
+                    amount: response.data.results.txn_amount,
+                    product: response.data.results.product_name,
+                    paymentMode: response.data.results.payment_mode,
+                    status: response.data.results.status,
+                    expireTime: ExpireTime(response.data.results.txn_date),
+
+                };
+                let paymentResponse = await CreatePaymentRequest(paymentData);
+                res.send(paymentResponse)
+            }
+        }
+        
+        else {
             res.send(response)
         }
 
