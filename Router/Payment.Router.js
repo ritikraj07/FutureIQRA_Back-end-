@@ -76,7 +76,7 @@ PaymentRouter.post('/status/:orderId', async (req, res) => {
 
 
 
-PaymentRouter.get('/status/:orderId', async (req, res) => {
+PaymentRouter.get('/order-status/:orderId', async (req, res) => {
     try {
         
         let orderId = req.params.orderId
