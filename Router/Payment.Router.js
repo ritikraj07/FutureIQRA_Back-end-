@@ -44,7 +44,8 @@ PaymentRouter.post('/status/:orderId', async (req, res) => {
 
         const response = await axios.post("https://allapi.in/order/status", data);
         // res.json(response.data);
-
+    let expireTime = ExpireTime(response.data.results.txn_date)
+    console.log(expireTime)
         if (response.data.status) {
             let paymentData = {
                 phone: response.data.results.customer_mobile,
@@ -54,7 +55,7 @@ PaymentRouter.post('/status/:orderId', async (req, res) => {
                 product: response.data.results.product_name,
                 paymentMode: response.data.results.payment_mode,
                 status: response.data.results.status,
-                expireTime: ExpireTime(response.data.results.txn_date),
+                expireTime: expireTime,
                 
             };
             await CreatePaymentRequest(paymentData);
@@ -150,7 +151,6 @@ function ExpireTime(inputDate) {
 
     // Combine the values into a formatted string
     const formattedDate = `${day} ${month} ${year}`;
-
     return formattedDate;
 }
 
