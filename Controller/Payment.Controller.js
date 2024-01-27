@@ -1,10 +1,10 @@
-const { Payment } = require("../Model/Payment.Model");
+const Payment  = require("../Model/Payment.Model");
 const User = require("../Model/User.Model");
 
 
 async function CreatePaymentRequest(paymentData) {
     try { 
-
+        console.log(paymentData, '<======')
         let payment = await Payment.create(paymentData)
         if (paymentData.status == 'Success') {
             let user = await User.findOne({ phone: paymentData.phone })
