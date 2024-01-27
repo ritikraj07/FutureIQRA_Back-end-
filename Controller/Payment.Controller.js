@@ -125,8 +125,7 @@ async function updateExpiredPayments() {
     try {
         let currentTime = new Date();
 
-        currentTime = ExpireTime(currentTime)
-
+        
 
         // Use the aggregation pipeline to find payments with status 'Success' and expireTime less than or equal to the current time
         const expiredPayments = await Payment.aggregate([
@@ -183,15 +182,6 @@ function getRandomNumber(min, max) {
     }
     const randomNumber = Math.random() * (max - min) + min;
     return Math.floor(randomNumber);
-}
-
-function ExpireTime(inputDate) {
-    const date = new Date(inputDate);
-    const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'long' });
-    const year = date.getFullYear();
-    const formattedDate = `${day} ${month} ${year}`;
-    return formattedDate;
 }
 
 

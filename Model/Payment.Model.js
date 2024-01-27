@@ -1,5 +1,5 @@
 const {Schema, model} = require('mongoose');
-
+const mongoosePaginate = require("mongoose-paginate-v2");
 const PaymentModel = new Schema({
     phone: {
         type: String,
@@ -41,6 +41,8 @@ const PaymentModel = new Schema({
     }
 });
 
+
+PaymentModel.plugin(mongoosePaginate)
 
 const Payment = model('Payment', PaymentModel)
 

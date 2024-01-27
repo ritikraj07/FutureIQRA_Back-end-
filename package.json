@@ -17,6 +17,7 @@
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.3",
+    "mongoose-paginate-v2": "^1.8.0",
     "morgan": "^1.10.0",
     "serverless-http": "^3.2.0"
   }

@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose')
-
+const mongoosePaginate = require("mongoose-paginate-v2");
 const QuestionSchema = new Schema({
     question: {
         type: String,
@@ -21,6 +21,7 @@ const QuestionSchema = new Schema({
     timestamps: true
 })
 
+QuestionSchema.plugin(mongoosePaginate)
 const Question = model('Question', QuestionSchema)
 
 module.exports = Question

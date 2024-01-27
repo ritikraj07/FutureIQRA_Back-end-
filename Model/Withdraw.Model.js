@@ -1,5 +1,5 @@
 const { model, Schema } = require('mongoose')
-
+const mongoosePaginate = require('mongoose-paginate-v2');
 const WithdrawModel = new Schema({
     userId: {
         type: String, 
@@ -25,7 +25,10 @@ const WithdrawModel = new Schema({
     }
 
 
-}, { timeseries: true })
+}, { timestamps: true })
+
+
+WithdrawModel.plugin(mongoosePaginate)
 
 const Withdraw = model('Withdraw', WithdrawModel)
 

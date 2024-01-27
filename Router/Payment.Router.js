@@ -138,20 +138,25 @@ function GenerateOrderId() {
     return generatedText;
 }
 
-function ExpireTime(inputDate) {
-    const date = new Date(inputDate);
+function ExpireTime(currentDate) {
+    const dateObject = new Date(currentDate);
 
-    // Get the next month
-    date.setMonth(date.getMonth() + 1);
+    // Get the current month
+    const currentMonth = dateObject.getMonth();
 
-    // Extract date, month, and year
-    const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'long' });
-    const year = date.getFullYear();
+    // Calculate the next month
+    const nextMonth = (currentMonth + 1) % 12;
 
-    // Combine the values into a formatted string
-    const formattedDate = `${day} ${month} ${year}`;
-    return formattedDate;
+    // Calculate the year for the next month
+    const nextMonthYear = currentMonth === 11 ? dateObject.getFullYear() + 1 : dateObject.getFullYear();
+
+    // Create a new date object for the next month
+    const nextMonthDate = new Date(nextMonthYear, nextMonth, dateObject.getDate(), dateObject.getHours(), dateObject.getMinutes(), dateObject.getSeconds());
+
+    // Format the result as a string
+    const formattedNextMonthDate = nextMonthDate.toISOString().slice(0, 19).replace("T", " ");
+
+    return formattedNextMonthDate;
 }
 
 

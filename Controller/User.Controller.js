@@ -4,7 +4,8 @@ const Question = require("../Model/Question.Model");
 const Report = require("../Model/Report.Model");
 const User = require("../Model/User.Model");
 let bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const Withdraw = require("../Model/Withdraw.Model");
 
 
 async function GenerateToken(user) {
@@ -279,13 +280,14 @@ async function GetUserById(id) {
 
             let referCode = user.referCode
             let team = await GetTeam(referCode)
-            let paymentHistory = await Payment.find({phone: user.phone});
+            let paymentHistory = await Payment.find({ phone: user.phone });
+            let withdrawHistory = await Withdraw.find({ userId: user._id})
             user = user.toJSON();
 
             delete user.password;
             return {
                 status: true,
-                data: { ...user, team, paymentHistory },
+                data: { ...user, team, paymentHistory, withdrawHistory },
                 token: await GenerateToken(user),
             }
         } else {

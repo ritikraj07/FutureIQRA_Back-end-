@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose')
-
+const mongoosePaginate = require("mongoose-paginate-v2");
 const ReportSchema = new Schema({
     name: {
         type: String,
@@ -24,7 +24,8 @@ const ReportSchema = new Schema({
 }, {
     timestamps: true
 })
-
+ 
+ ReportSchema.plugin(mongoosePaginate)
 
 const Report = model('Report', ReportSchema)
 
