@@ -25,7 +25,7 @@ const UserSchema = new Schema({
     },
     referby: {
         type: String,
-        default: '070707'
+        // default: '070707'
     },
     referCode: {
         type: String

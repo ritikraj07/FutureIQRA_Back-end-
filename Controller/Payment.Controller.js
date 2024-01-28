@@ -123,8 +123,10 @@ async function GetAll_User_Payment_Data(phone) {
 
 async function updateExpiredPayments() {
     try {
+
         let currentTime = new Date();
 
+        console.log('current time from updateExpiredpayments', currentTime)
         
 
         // Use the aggregation pipeline to find payments with status 'Success' and expireTime less than or equal to the current time
@@ -141,7 +143,7 @@ async function updateExpiredPayments() {
                     phone: 1,
                 },
             },
-        ]);
+        ]).option({ maxTimeMS: 60000 });
 
         // Extract phone numbers from the result
         const phonesToUpdate = expiredPayments.map((payment) => payment.phone);
@@ -170,7 +172,7 @@ async function updateExpiredPayments() {
 }
 
 
-setInterval(updateExpiredPayments,1000*60)
+setInterval(updateExpiredPayments,1000*60*60)
 
 
 
