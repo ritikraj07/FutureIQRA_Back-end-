@@ -170,7 +170,7 @@ async function updateExpiredPayments() {
 }
 
 
-setInterval(updateExpiredPayments,1000*60*6)
+setInterval(updateExpiredPayments,1000*60)
 
 
 
