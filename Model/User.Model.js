@@ -10,6 +10,7 @@ const UserSchema = new Schema({
     phone: {
         type: String,
         required: true,
+        unique: true,
     },
     wallet: {
         type: Number,
@@ -28,7 +29,8 @@ const UserSchema = new Schema({
         // default: '070707'
     },
     referCode: {
-        type: String
+        type: String,
+        unique: true,
     },
     isAdmin: {
         type: Boolean,
@@ -41,7 +43,8 @@ const UserSchema = new Schema({
         required: true // Indicates that userType is required
     },
     email: {
-        type: String
+        type: String,
+        unique: true,
     },
 
 }, {
