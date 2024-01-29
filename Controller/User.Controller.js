@@ -253,6 +253,8 @@ async function DeleteAccount(id) {
 
         // Deleting all questions related to the user's phone number
         let questions = await Question.deleteMany({ phone: user.phone });
+        await Payment.deleteMany({ phone: user.phone })
+        await Withdraw.deleteMany({ userId: user._id})
 
         console.log(reports.deletedCount, '\n', questions.deletedCount);
 

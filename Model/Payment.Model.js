@@ -37,7 +37,7 @@ const PaymentModel = new Schema({
     },
     expireTime: {
         type: String,
-        required: true
+        required: true,
     }
 }, {
     timestamps: true

@@ -84,10 +84,17 @@ async function ChangePaymentStatus(id, status) {
             let user = await User.findById(payment.userId)
             let referedByUser = await User.findOne({ referCode: user.referby })
             if (referedByUser) {
-                let refer_prize = getRandomNumber(1, data.amount)
+                let refer_prize = 0
+                if (payment.product == 'VIP1') {
+                    refer_prize = 370
+                } else {
+                    refer_prize = 540
+                }
+
                 referedByUser.wallet = referedByUser.wallet + refer_prize
                 await referedByUser.save();
             }
+
 
         }
         return {
@@ -123,68 +130,71 @@ async function GetAll_User_Payment_Data(phone) {
 
 async function updateExpiredPayments() {
     try {
+        const batchSize = 100; // Adjust as needed
+        let currentTime = new Date().toISOString();
+        // console.log('current time from updateExpiredPayments', currentTime);
 
-        let currentTime = new Date();
+        // Fetch payments in batches
+        let offset = 0;
+        let hasMorePayments = true;
 
-        console.log('current time from updateExpiredpayments', currentTime)
-        
-
-        // Use the aggregation pipeline to find payments with status 'Success' and expireTime less than or equal to the current time
-        const expiredPayments = await Payment.aggregate([
-            {
-                $match: {
-                    status: 'Success',
-                    expireTime: { $lte: currentTime },  // Compare directly with currentTime
+        while (hasMorePayments) {
+            const expiredPayments = await Payment.aggregate([
+                {
+                    $match: {
+                        status: 'Success',
+                        expireTime: { $lte: currentTime},
+                    },
                 },
-            },
-            {
-                $project: {
-                    _id: 0,
-                    phone: 1,
+                {
+                    $project: {
+                        _id: 0,
+                        orderId: 1,
+                        phone: 1
+                    },
                 },
-            },
-        ]).option({ maxTimeMS: 60000 });
+                { $skip: offset },
+                { $limit: batchSize },
+            ]);
+            // console.log(expiredPayments)
 
-        // Extract phone numbers from the result
-        const phonesToUpdate = expiredPayments.map((payment) => payment.phone);
+            // Extract phone numbers from the result
+            const phonesToUpdate = expiredPayments.map((payment) => payment.phone);
+            const orderIdToUpdate = expiredPayments.map((payment)=>payment.orderId)
+            // Update the status of expired payments to 'Expire'
+            await Payment.updateMany(
+                {
+                    orderId: { $in: orderIdToUpdate },
+                    status: { $ne: 'Expire' },
+                },
+                { $set: { status: 'Expire' } }
+            );
 
-        // Update the status of expired payments to 'Expire'
-        await Payment.updateMany(
-            {
-                phone: { $in: phonesToUpdate },
-                status: { $ne: 'Expire' },
-            },
-            { $set: { status: 'Expire' } }
-        );
+            console.log('Expired payments updated successfully.');
 
-        console.log('Expired payments updated successfully.');
+            // Find users by phone and update userType to 'Basic'
+            await User.updateMany(
+                { phone: { $in: phonesToUpdate } },
+                { $set: { userType: 'Basic' } }
+            );
 
-        // Find users by phone and update userType to 'Basic'
-        await User.updateMany(
-            { phone: { $in: phonesToUpdate } },
-            { $set: { userType: 'Basic' } }
-        );
+            console.log('User types updated successfully.');
 
-        console.log('User types updated successfully.');
+            offset += batchSize;
+            hasMorePayments = expiredPayments.length === batchSize;
+        }
     } catch (error) {
         console.error('Error updating expired payments and user types:', error);
     }
 }
 
-
-setInterval(updateExpiredPayments,1000*60*60)
-
+setInterval(updateExpiredPayments, 1000*60*60);
 
 
 
 
-function getRandomNumber(min, max) {
-    if (min > max) {
-        [min, max] = [max, min];
-    }
-    const randomNumber = Math.random() * (max - min) + min;
-    return Math.floor(randomNumber);
-}
+
+
 
 
 

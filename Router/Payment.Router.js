@@ -44,7 +44,7 @@ PaymentRouter.post('/status/:orderId', async (req, res) => {
 
         const response = await axios.post("https://allapi.in/order/status", data);
         // res.json(response.data);
-    let expireTime = ExpireTime(response.data.results.txn_date)
+    let expireTime = ExpireTime()
     
         if (response.data.status) {
             let paymentData = {
@@ -138,8 +138,8 @@ function GenerateOrderId() {
     return generatedText;
 }
 
-function ExpireTime(currentDate) {
-    const dateObject = new Date(currentDate);
+function ExpireTime() {
+    const dateObject = new Date();
 
     // Get the current month
     const currentMonth = dateObject.getMonth();
@@ -154,7 +154,7 @@ function ExpireTime(currentDate) {
     const nextMonthDate = new Date(nextMonthYear, nextMonth, dateObject.getDate(), dateObject.getHours(), dateObject.getMinutes(), dateObject.getSeconds());
 
     // Format the result as a string
-    const formattedNextMonthDate = nextMonthDate.toISOString().slice(0, 19).replace("T", " ");
+    const formattedNextMonthDate = nextMonthDate.toISOString();
 
     return formattedNextMonthDate;
 }
