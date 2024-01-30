@@ -141,22 +141,16 @@ function GenerateOrderId() {
 function ExpireTime() {
     const dateObject = new Date();
 
-    // Get the current month
-    const currentMonth = dateObject.getMonth();
+    // Calculate the next year
+    const nextYear = dateObject.getFullYear() + 1;
 
-    // Calculate the next month
-    const nextMonth = (currentMonth + 1) % 12;
-
-    // Calculate the year for the next month
-    const nextMonthYear = currentMonth === 11 ? dateObject.getFullYear() + 1 : dateObject.getFullYear();
-
-    // Create a new date object for the next month
-    const nextMonthDate = new Date(nextMonthYear, nextMonth, dateObject.getDate(), dateObject.getHours(), dateObject.getMinutes(), dateObject.getSeconds());
+    // Create a new date object for the next year
+    const nextYearDate = new Date(nextYear, dateObject.getMonth(), dateObject.getDate(), dateObject.getHours(), dateObject.getMinutes(), dateObject.getSeconds());
 
     // Format the result as a string
-    const formattedNextMonthDate = nextMonthDate.toISOString();
+    const formattedNextYearDate = nextYearDate.toISOString();
 
-    return formattedNextMonthDate;
+    return formattedNextYearDate;
 }
 
 
