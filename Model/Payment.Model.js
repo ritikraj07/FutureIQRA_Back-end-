@@ -44,6 +44,7 @@ const PaymentModel = new Schema({
 });
 
 
+
 PaymentModel.plugin(mongoosePaginate)
 
 const Payment = model('Payment', PaymentModel)

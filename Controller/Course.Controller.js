@@ -106,26 +106,33 @@ async function UpdateCourse(data) {
 
 async function SearchCourse({ coursetype, id, name }) {
     try {
-        let course;
-        if (id) {
-            course = await Course.findById(id);
-        }
+        let query = {};
+        coursetype = coursetype.toLowerCase();
         
-        else if (coursetype && name) {
-            const nameRegex = new RegExp(name, 'i');
-            course = await Course.find({ $and: [{ coursetype: coursetype }, { name: nameRegex }] });
+        if (id) {
+            query = { _id: id };
+        } else {
+            if (coursetype) {
+                if (coursetype === 'vip1') {
+                    query.coursetype = 'VIP1';
+                } else if (coursetype === 'vip2') {
+                    query.coursetype = { $regex: new RegExp('VIP', 'i') };
+                }
+            }
+
+            if (name) {
+                query.name = { $regex: new RegExp(name, 'i') };
+            }
+
         }
-        else if (coursetype) {
-            const regex = new RegExp(coursetype, 'i');
-            course = await Course.find({ coursetype: { $regex: regex } });
-        } else if (name) {
-            const regex = new RegExp(name, 'i');
-            course = await Course.find({ name: { $regex: regex } });
-        }
+
+        const courses = await Course.find(query);
+        // console.log(courses)
+
         return {
             status: true,
             message: 'Success',
-            data: course,
+            data: courses,
         };
     } catch (error) {
         return {
@@ -135,6 +142,7 @@ async function SearchCourse({ coursetype, id, name }) {
         };
     }
 }
+
 
 
 
