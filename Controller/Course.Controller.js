@@ -116,7 +116,8 @@ async function SearchCourse({ coursetype, id, name }) {
                 if (coursetype === 'vip1') {
                     query.coursetype = 'VIP1';
                 } else if (coursetype === 'vip2') {
-                    query.coursetype = { $regex: new RegExp('VIP', 'i') };
+                    // query.coursetype = { $regex: new RegExp('VIP', 'i') };
+                    query.coursetype = 'VIP2';
                 }
             }
 
