@@ -15,9 +15,9 @@ const AdminRoute = require('./Router/Admin.Router');
 const app = express();
 
 
+app.use(cors());
 app.use(express.json());
 // app.use(express.static('static'));
-app.use(cors());
 
 // app.use((req, res, next) => {
 //     // how to use this url also https://futureiqra.onrender.com/ this my backend url

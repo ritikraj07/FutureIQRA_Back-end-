@@ -32,20 +32,19 @@ WithdrawRouter.patch('/', VerifyUser, VerifyAdmin, async (req, res) => {
 /**************************************** GET ******************************************/
 
 
-WithdrawRouter.get('/', VerifyUser, async (req, res) => {
+WithdrawRouter.get('/', async (req, res) => {
     try {
-        const { filter, search, days, perPage, page } = req.query;
+        const { status, search, days, perPage, page } = req.query;
 
         // Convert string query parameters to appropriate types
         const parsedDays = parseInt(days) || 0;
         const parsedPerPage = parseInt(perPage) || 10;
         const parsedPage = parseInt(page) || 1;
 
-        // Parse filter as JSON if provided
-        const parsedFilter = filter ? JSON.parse(filter) : {};
+        // Convert status query parameter to an array of strings
 
         const withdrawData = await GetWithdrawData(
-            parsedFilter,
+            status || "",
             search || "",
             parsedDays,
             parsedPerPage,

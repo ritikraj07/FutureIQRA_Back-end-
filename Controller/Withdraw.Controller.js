@@ -10,7 +10,7 @@ async function CreateWithdrwalRequest({ userId, upi_Id, email, amount }) {
                 status: false,
                 message: 'No User Found!'
             }
-        } 
+        }
         if (user.wallet < amount) {
             return {
                 status: false,
@@ -50,30 +50,35 @@ async function ChangeWithdrawStatus({ _id, status }) {
             message: 'Status Change Succuessfully',
             data: withdraw
         }
-     } catch (error) {
+    } catch (error) {
         return {
             status: false,
             message: 'Internal Server Error',
             error: error
         }
     }
-    
+
 }
 
 
 
 
-async function GetWithdrawData(filter = {}, search = "", days = 0, perPage = 10, page = 1) {
+async function GetWithdrawData(status, search = "", days = 0, perPage = 3, page = 1) {
     try {
         // Define the base query
         const query = {
-            ...filter,
+
             $or: [
                 { userId: { $regex: new RegExp(search, 'i') } },
                 { upi_Id: { $regex: new RegExp(search, 'i') } },
+                { email: { $regex: new RegExp(search, 'i') } },
                 // Add more fields you want to search here
             ],
         };
+
+        if (status) {
+            query.status = { $regex: new RegExp(status, 'i') }
+        }
 
         // Apply date filters if specified
         if (days > 0) {
@@ -82,27 +87,25 @@ async function GetWithdrawData(filter = {}, search = "", days = 0, perPage = 10,
             query.createdAt = { $gte: dateFilter };
         }
 
-        // Fetch the total count of records
-        const totalCount = await Withdraw.countDocuments(query);
-
-        // Calculate total pages
-        const totalPages = Math.ceil(totalCount / perPage);
-
         // Fetch data from the database with pagination
-        const withdrawData = await Withdraw.find(query)
-            .limit(perPage)
-            .skip(perPage * (page - 1));
+        const options = {
+            page: page,
+            limit: perPage
+        };
+
+        const withdrawData = await Withdraw.paginate(query, options);
 
         return {
             status: true,
-            data: withdrawData,
-            totalPage: totalPages,
+            data: withdrawData, // Extract documents from pagination result
+
         };
     } catch (error) {
         console.error('Error fetching withdraw data:', error);
         throw error;
     }
 }
+
 module.exports = {
     CreateWithdrwalRequest,
     ChangeWithdrawStatus,
