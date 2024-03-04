@@ -20,6 +20,14 @@ UserRouter.post('/token', VerifyUser, async (req, res) => {
     let id = req.user.data._id
     // console.log(req.user.data)
     let response = await GetUserById(id)
+    res.cookie('token_xyz', response.data.token, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        sameSite: true,
+        secure: true,
+        signed: true,
+        domain: 'futureiqra.in',
+    })
     res.send(response)
 })
 
@@ -50,7 +58,14 @@ UserRouter.get('/login/:phone/:password', async (req, res) => {
     
     let { phone, password } = req.params
     let result = await Login(phone, password)
-    
+    res.cookie('token_xyz', "ok token set", {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        sameSite: true,
+        secure: true,
+        signed: true,
+        domain: 'futureiqra.in',
+    })
     res.send(result);
 });
 
