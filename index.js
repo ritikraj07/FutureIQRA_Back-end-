@@ -12,11 +12,14 @@ const CourseRouter = require('./Router/Course.Router');
 const PaymentRouter = require('./Router/Payment.Router');
 const WithdrawRouter = require('./Router/Withdraw.Router');
 const AdminRoute = require('./Router/Admin.Router');
+const SearchLogger = require('./Middleware/MaintainLogs');
 const app = express();
 
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(SearchLogger)
 // app.use(express.static('static'));
 
 // app.use((req, res, next) => {
