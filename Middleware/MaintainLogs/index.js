@@ -21,21 +21,21 @@ const SearchLogger = async (req, res, next) => {
     await writefile(data);
 
     // Calculate the delay until the next midnight
-    const now = new Date();
-    const midnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1, // Next day
-        0, // Hour
-        0, // Minute
-        0 // Second
-    );
-    const delay = midnight.getTime() - now.getTime();
+    // const now = new Date();
+    // const midnight = new Date(
+    //     now.getFullYear(),
+    //     now.getMonth(),
+    //     now.getDate() + 1, // Next day
+    //     0, // Hour
+    //     0, // Minute
+    //     0 // Second
+    // );
+    // const delay = midnight.getTime() - now.getTime();
 
-    // Schedule sending daily logs at midnight
-    setTimeout(SendDailyLog, delay);
+    // // Schedule sending daily logs at midnight
+    // setTimeout(SendDailyLog, delay);
 
-    next();
+    // next();
 };
 
 module.exports = SearchLogger;

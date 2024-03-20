@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const { ResetFile } = require('./file');
+const path = require('path');
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -29,7 +30,7 @@ const SendDailyLog = async () => {
             text: "Log file",
             attachments: [{
                 filename: 'log.json',
-                path: './log.json' // Attach the content of log.json
+                path: __dirname+ '/log.json' // Attach the content of log.json
             }]
         });
         console.log('Email sent successfully');

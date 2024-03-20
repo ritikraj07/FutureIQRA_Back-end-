@@ -12,23 +12,48 @@ const CourseRouter = require('./Router/Course.Router');
 const PaymentRouter = require('./Router/Payment.Router');
 const WithdrawRouter = require('./Router/Withdraw.Router');
 const AdminRoute = require('./Router/Admin.Router');
-const SearchLogger = require('./Middleware/MaintainLogs');
+// const SearchLogger = require('./Middleware/MaintainLogs');
 const app = express();
 
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(SearchLogger)
+// app.use(SearchLogger)
 // app.use(express.static('static'));
 
+// Middleware to validate requests from specific domains
 app.use((req, res, next) => {
-    // how to use this url also https://futureiqra.onrender.com/ this my backend url
-  res.header('Access-Control-Allow-Origin', 'https://www.futureiqra.in');  // frontend url
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); 
-  
-  next();
+    const allowedDomains = ['https://www.futureiqra.in', 'https://futureiqra.onrender.com','https://allapi.in' ]; // List of allowed domains
+
+    const origin = req.headers.origin; // Get the origin from the request headers
+        console.log(origin, "origin")
+    // Check if the origin is in the list of allowed domains
+    if (allowedDomains.includes(origin)) {
+        // Set the Access-Control-Allow-Origin header to allow requests from the origin
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        // Set other CORS headers as needed
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+        // Continue processing the request
+        next();
+    } else {
+        // Return an error response if the origin is not allowed
+        return res.status(403).json({ error: 'Forbidden: Origin not allowed' });
+    }
 });
+
+
+// app.use((req, res, next) => {
+//     console.log(req)
+//     // how to use this url also https://futureiqra.onrender.com/ this my backend url
+//   res.header('Access-Control-Allow-Origin', 'https://www.futureiqra.in');  // frontend url
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); 
+  
+//   next();
+// });
 
 // app.use((req, res, next) => {
 //     res.setHeader('Access-Control-Allow-Origin', 'https://www.futureiqra.in');
