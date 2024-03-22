@@ -11,13 +11,13 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
         let token = config.PAYMENT_TOKEN
 
         if (product_name == 'VIP1') {
-            amount = 1
-        }else if (product_name == 'VIP2') {
-            amount = 2
+            amount = 499
+        } else if (product_name == 'VIP2') {
+            amount = 999
         } else {
             amount = 10000
         }
-        
+
         let orderId = GenerateOrderId()
         let courseData = {
             token: token,
@@ -30,7 +30,7 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
             customer_email: email,
             callback_url: `https://futureiqra.onrender.com/payment/status/${orderId}`,
         };
-        
+
 
         const response = await axios.post('https://allapi.in/order/create', courseData);
         res.json(response.data);
@@ -41,36 +41,36 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
 });
 
 PaymentRouter.post('/status/:orderId', async (req, res) => {
-    
-        let { orderId } = req.params;
-        
 
-        let data = {
-            token: config.PAYMENT_TOKEN,
-            order_id: orderId,
-        };
+    let { orderId } = req.params;
 
-        const response = await axios.post("https://allapi.in/order/status", data);
-        // res.json(response.data);
+
+    let data = {
+        token: config.PAYMENT_TOKEN,
+        order_id: orderId,
+    };
+
+    const response = await axios.post("https://allapi.in/order/status", data);
+    // res.json(response.data);
     let expireTime = ExpireTime()
-    
-        if (response.data.status) {
-            let paymentData = {
-                phone: response.data.results.customer_mobile,
-                orderId: orderId,
-                transactionDate: response.data.results.txn_date,
-                amount: response.data.results.txn_amount,
-                product: response.data.results.product_name,
-                paymentMode: response.data.results.payment_mode,
-                status: response.data.results.status,
-                expireTime: expireTime,
-                
-            };
-            await CreatePaymentRequest(paymentData);
-        }
 
-        res.redirect(`https://www.futureiqra.in/thank-you/${orderId}`);
- 
+    if (response.data.status) {
+        let paymentData = {
+            phone: response.data.results.customer_mobile,
+            orderId: orderId,
+            transactionDate: response.data.results.txn_date,
+            amount: response.data.results.txn_amount,
+            product: response.data.results.product_name,
+            paymentMode: response.data.results.payment_mode,
+            status: response.data.results.status,
+            expireTime: expireTime,
+
+        };
+        await CreatePaymentRequest(paymentData);
+    }
+
+    res.redirect(`https://www.futureiqra.in/thank-you/${orderId}`);
+
 });
 
 
@@ -78,7 +78,7 @@ PaymentRouter.post('/status/:orderId', async (req, res) => {
 
 PaymentRouter.get('/order-status/:orderId', async (req, res) => {
     try {
-        
+
         let orderId = req.params.orderId
         let response = await GetPaymentStatus({ orderId })
 
@@ -88,12 +88,12 @@ PaymentRouter.get('/order-status/:orderId', async (req, res) => {
                 order_id: orderId,
             };
             const response = await axios.post("https://allapi.in/order/status", data)
-            
+
             if (response.data.results.status !== 'Pending') {
                 let newResponse = await ChangePaymentStatus(orderId, response.data.results.status)
                 res.send(newResponse)
             }
-        }         
+        }
         else {
             res.send(response)
         }
@@ -106,8 +106,8 @@ PaymentRouter.get('/order-status/:orderId', async (req, res) => {
 
 
 
-PaymentRouter.get('/all/:phone',VerifyUser, async (req, res) => {
-    try { 
+PaymentRouter.get('/all/:phone', VerifyUser, async (req, res) => {
+    try {
         let phone = req.params.phone
         let response = await GetAll_User_Payment_Data(phone)
         res.send(response)

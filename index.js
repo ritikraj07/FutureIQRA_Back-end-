@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan')
+const fs = require('fs');
 
 const UserRouter = require('./Router/User.Router');
 // var session = require('express-session');
@@ -24,10 +25,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware to validate requests from specific domains
 app.use((req, res, next) => {
-    const allowedDomains = ['https://www.futureiqra.in', 'https://futureiqra.onrender.com','https://allapi.in' ]; // List of allowed domains
+    const allowedDomains = ['https://www.futureiqra.in',
+        'https://futureiqra.onrender.com',
+        'https://allapi.in'
+    ]; // List of allowed domains
 
     const origin = req.headers.origin; // Get the origin from the request headers
-        console.log(origin, "origin")
+    console.log(origin, "origin")
     // Check if the origin is in the list of allowed domains
     if (allowedDomains.includes(origin)) {
         // Set the Access-Control-Allow-Origin header to allow requests from the origin
@@ -51,7 +55,7 @@ app.use((req, res, next) => {
 //     // how to use this url also https://futureiqra.onrender.com/ this my backend url
 //   res.header('Access-Control-Allow-Origin', 'https://www.futureiqra.in');  // frontend url
 //   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); 
-  
+
 //   next();
 // });
 
@@ -74,17 +78,29 @@ app.use('/payment', PaymentRouter)
 app.use('/withdraw', WithdrawRouter)
 app.use('/admin', AdminRoute)
 
-app.get('/avatars', (req, res) => { 
-    res.sendFile(__dirname + '/avatars.png')
-})
+app.get('/avatar/:id', (req, res) => {
+    let id = req.params.id;
+    const filePath = `./Avatars/avatar${id}.jpg`;
+
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error(`Error accessing file ${filePath}:`, err);
+            return res.status(404).send('Image not found');
+        }
+
+        fs.createReadStream(filePath).pipe(res);
+    });
+});
 
 app.get("/", (req, res) => {
     res.send("all is well")
 })
 
+let PORT = 8000
+
 ConnectDatabase()
     .then(() => {
-        app.listen(8000)
-        console.log("Server Started")
+        app.listen(PORT)
+        console.log("Server Started at port " + PORT)
     }).catch((error) => console.log("Error==>", error))
 
