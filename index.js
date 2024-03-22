@@ -74,6 +74,10 @@ app.use('/payment', PaymentRouter)
 app.use('/withdraw', WithdrawRouter)
 app.use('/admin', AdminRoute)
 
+app.get('/avatars', (req, res) => { 
+    res.sendFile(__dirname + '/avatars.png')
+})
+
 app.get("/", (req, res) => {
     res.send("all is well")
 })

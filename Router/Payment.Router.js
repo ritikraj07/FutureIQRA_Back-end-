@@ -9,6 +9,14 @@ PaymentRouter.post('/api/proxy', VerifyUser, async (req, res) => {
     try {
         let { amount, note, product_name, email, name, phone } = req.body
         let token = config.PAYMENT_TOKEN
+
+        if (product_name == 'VIP1') {
+            amount = 1
+        }else if (product_name == 'VIP2') {
+            amount = 2
+        } else {
+            amount = 10000
+        }
         
         let orderId = GenerateOrderId()
         let courseData = {
