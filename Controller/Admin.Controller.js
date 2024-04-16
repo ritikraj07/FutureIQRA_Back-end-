@@ -1,3 +1,4 @@
+const Blog = require("../Model/Blog.Model");
 const Course = require("../Model/Course.Model");
 const Payment = require("../Model/Payment.Model");
 const Question = require("../Model/Question.Model");
@@ -15,6 +16,7 @@ async function AllData() {
         const reportData = await Report.paginate({}, options);
         const withdrawData = await Withdraw.paginate({}, options);
         const paymentData = await Payment.paginate({}, options);
+        const BlogData = await Blog.paginate({}, options);
 
         return {
             status: true,
@@ -25,6 +27,7 @@ async function AllData() {
                 ReportData: reportData,
                 WithdrawData: withdrawData,
                 PaymentData: paymentData,
+                BlogData: BlogData
             },
         };
     } catch (error) {

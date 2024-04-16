@@ -10,7 +10,6 @@ const Withdraw = require("../Model/Withdraw.Model");
 
 async function GenerateToken(user) {
     try {
-        console.log(user);
         let payload = {
             _id: user._id,
             data: user,
@@ -129,7 +128,7 @@ async function GetUser(phone) {
 
 async function GetLeadersBoard() {
     try {
-        const users = await User.find({}).sort({ wallet: -1, createdAt: -1 });
+        const users = await User.find({}).sort({ wallet: -1, createdAt: -1 }).limit(10)
 
         return {
             status: true,

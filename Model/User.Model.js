@@ -18,7 +18,7 @@ const UserSchema = new Schema({
     },
     image: {
         type: String,
-        default: 'https://6570556c9c603163391e8ba0--joyful-kheer-008761.netlify.app/Avatar/avatar1.jpg'
+        default: 'https://futureiqra.onrender.com/avatar/1'
     },
     password: {
         type: String,

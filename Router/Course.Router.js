@@ -23,6 +23,7 @@ CourseRouter.post('/add-video', VerifyUser, VerifyAdmin, async (req, res) => {
 
 
 CourseRouter.post('/buy-course', async (req, res) => {
+    
     let { amount, receipt, } = req.body;
 
 
