@@ -60,11 +60,21 @@ async function getAllBlogs(query) {
 const GetBlogById = async (id) => {
     try {
         const blog = await Blog.findById(id).populate('author', 'name');
-        return blog;
+        if (!blog) {
+            throw new Error('Blog not found');
+        }
+
+        // Fetch blogs of the same category with limit 10
+        const relatedBlogs = await Blog.find({ category: blog.category }).limit(10);
+
+        return { blog, relatedBlogs };
     } catch (error) {
         throw new Error('Error fetching blog: ' + error.message);
     }
 }
+
+
+
 
 
 async function deleteBlog(userId, blogId) {

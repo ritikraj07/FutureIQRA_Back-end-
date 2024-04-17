@@ -17,7 +17,7 @@ async function AllData() {
         const withdrawData = await Withdraw.paginate({}, options);
         const paymentData = await Payment.paginate({}, options);
         const BlogData = await Blog.paginate({}, options);
-
+        
         return {
             status: true,
             data: {

@@ -17,7 +17,6 @@ BlogRouter.post('/create', VerifyUser, async (req, res) => {
     
 });
 
-
 /****************************************** GET, PATCH, DELETE ****************************************** */
 
 BlogRouter.route('/:id')
@@ -32,8 +31,9 @@ BlogRouter.route('/:id')
     .patch(VerifyUser, async (req, res) => {
         try {
             let userId = req.user._id
-            let { title, body, category, tags } = req.body;
-            let response = await updateBlog(userId, blogId, { title, body, category, tags });
+            let { title, body, category, tags, short_description } = req.body;
+            let blogId = req.params.id
+            let response = await updateBlog(userId, blogId, { title, body, category, tags, short_description });
             res.send({
                 status: true,
                 message: "Blog updated statusfully",
