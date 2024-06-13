@@ -26,66 +26,8 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(SearchLogger)
 // app.use(express.static('static'));
 
-// Middleware to validate requests from specific domains
-// app.use((req, res, next) => {
-//     const allowedDomains = ['https://www.futureiqra.in',
-//         'https://futureiqra.onrender.com',
-//         'https://allapi.in'
-//     ]; // List of allowed domains
-
-//     if (req.path.startsWith('/avatar/')) {
-//         // If the request path matches /avatar/:id, allow access without origin validation
-//         return next();
-//     }
-
-//     const origin = req.headers.origin; // Get the origin from the request headers
-//     console.log(origin, "origin")
-//     // Check if the origin is in the list of allowed domains
-//     if (allowedDomains.includes(origin)) {
-//         // Set the Access-Control-Allow-Origin header to allow requests from the origin
-//         res.setHeader('Access-Control-Allow-Origin', origin);
-//         // Set other CORS headers as needed
-//         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//         res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//         res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-//         // Continue processing the request
-//         next();
-//     } else {
-//         // Return an error response if the origin is not allowed
-//         return res.status(403).json({ error: 'Forbidden: Origin not allowed' });
-//     }
-// });
 
 
-// app.use((req, res, next) => {
-//     console.log(req)
-//     // how to use this url also https://futureiqra.onrender.com/ this my backend url
-//   res.header('Access-Control-Allow-Origin', 'https://www.futureiqra.in');  // frontend url
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); 
-
-//   next();
-// });
-
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', 'https://www.futureiqra.in');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//     next();
-// });
-
-
-app.use(morgan('tiny'))
-
-
-app.use("/user", UserRouter)
-app.use('/course', CourseRouter)
-app.use('/q&a', QuestionRouter)
-app.use('/report', ReportRouter)
-app.use('/payment', PaymentRouter)
-app.use('/withdraw', WithdrawRouter)
-app.use('/admin', AdminRoute)
-app.use('/blog', BlogRouter);
 
 app.get('/avatar/:id', (req, res) => {
     let id = req.params.id;
@@ -100,6 +42,83 @@ app.get('/avatar/:id', (req, res) => {
         fs.createReadStream(filePath).pipe(res);
     });
 });
+
+app.get('/image/:name', (req, res) => {
+    let name = req.params.name;
+    const filePath = `./uploads/${name}`;
+
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error(`Error accessing file ${filePath}:`, err);
+            return res.status(404).send('Image not found');
+        }
+
+        fs.createReadStream(filePath).pipe(res);
+    });
+});
+
+// Middleware to validate requests from specific domains
+app.use((req, res, next) => {
+    const allowedDomains = ['https://www.futureiqra.in',
+        'https://futureiqra.onrender.com',
+        'https://allapi.in',
+        // 'http://localhost:8000',
+    ]; // List of allowed domains
+
+    if (req.path.startsWith('/avatar/')) {
+        // If the request path matches /avatar/:id, allow access without origin validation
+        return next();
+    }
+
+    const origin = req.headers.origin; // Get the origin from the request headers
+    console.log(origin, "origin")
+    // Check if the origin is in the list of allowed domains
+    if (allowedDomains.includes(origin)) {
+        // Set the Access-Control-Allow-Origin header to allow requests from the origin
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        // Set other CORS headers as needed
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+        // Continue processing the request
+        next();
+    } else {
+        // Return an error response if the origin is not allowed
+        return res.status(403).json({ error: 'Forbidden: Origin not allowed' });
+    }
+});
+
+
+app.use((req, res, next) => {
+    console.log(req)
+    // how to use this url also https://futureiqra.onrender.com/ this my backend url
+  res.header('Access-Control-Allow-Origin', 'https://www.futureiqra.in');  // frontend url
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); 
+
+  next();
+});
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://www.futureiqra.in');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+
+
+app.use(morgan('tiny'))
+
+
+app.use("/user", UserRouter)
+app.use('/course', CourseRouter)
+app.use('/q&a', QuestionRouter)
+app.use('/report', ReportRouter)
+app.use('/payment', PaymentRouter)
+app.use('/withdraw', WithdrawRouter)
+app.use('/admin', AdminRoute)
+app.use('/blog', BlogRouter);
+
 
 
 
@@ -132,7 +151,7 @@ app.get("/", (req, res) => {
 
 
 
-let PORT = 8000
+let PORT = process.env.PORT || 8000;
 
 ConnectDatabase()
     .then(() => {
