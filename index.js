@@ -24,7 +24,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(SearchLogger)
-// app.use(express.static('static'));
+app.use(express.static('dist'));
 
 
 
